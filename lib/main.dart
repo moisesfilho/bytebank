@@ -10,5 +10,13 @@ void main() => runApp(Column(
           'Craft beautiful UIs',
           textDirection: TextDirection.ltr,
         ),
+        Column(
+          children: <Widget>[
+            Text(
+              'Craft beautiful UIs',
+              textDirection: TextDirection.ltr,
+            ),
+          ],
+        )
       ],
     ));
