@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 void main() => runApp(BytebankApp());
@@ -10,7 +8,7 @@ class BytebankApp extends StatelessWidget {
     // TODO: implement build
     return MaterialApp(
       home: Scaffold(
-        body: FormularioTranferencia(),
+        body: ListaTranferencias(),
       ),
     );
   }
@@ -29,72 +27,96 @@ class FormularioTranferencia extends StatelessWidget {
       ),
       body: Column(
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-            child: TextField(
-              controller: _controladorCampoNumeroConta,
-              style: TextStyle(fontSize: 16.0),
-              decoration: InputDecoration(
-                labelText: 'Número da Conta',
-                hintText: '0000',
-              ),
-              keyboardType: TextInputType.number,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-            child: TextField(
-              controller: _controladorCampoValor,
-              style: TextStyle(fontSize: 16.0),
-              decoration: InputDecoration(
-                icon: Icon(Icons.monetization_on),
-                labelText: 'Valor',
-                hintText: '0,00',
-              ),
-              keyboardType: TextInputType.number,
-            ),
-          ),
+          Editor(
+              controlador: _controladorCampoNumeroConta,
+              rotulo: 'Número da Conta',
+              dica: '0000'),
+          Editor(
+              controlador: _controladorCampoValor,
+              rotulo: 'Valor',
+              dica: '0.00',
+              icone: Icons.monetization_on),
           RaisedButton(
             child: Text('Confirmar'),
-            onPressed: () {
-              final int numeroConta =
-                  int.tryParse(_controladorCampoNumeroConta.text);
-              final double valor = double.tryParse(_controladorCampoValor.text);
-              if (numeroConta != null && valor != null) {
-                final tranferenciaCriada = Tranferencia(valor, numeroConta);
-                var menssagemSucesso = 'Tranferência criada com sucesso.';
-                showMessage(context, menssagemSucesso);
-              } else {
-                var menssagemFaltandoDados = 'Necessário número da conta e valor.';
-                showMessage(context, menssagemFaltandoDados);
-              }
-            },
+            onPressed: () => _criaTranferencia(context),
           )
         ],
       ),
     );
   }
 
-  void showMessage(BuildContext context, String menssagemSucesso) {
+  void _criaTranferencia(BuildContext context) {
+    final int numeroConta = int.tryParse(_controladorCampoNumeroConta.text);
+    final double valor = double.tryParse(_controladorCampoValor.text);
+    if (numeroConta != null && valor != null) {
+      final tranferenciaCriada = Tranferencia(valor, numeroConta);
+      var menssagemSucesso =
+          'Tranferência de $valor criada para a conta $numeroConta.';
+      //_showMessage(context, menssagemSucesso);
+      Navigator.pop(context, tranferenciaCriada);
+    } else {
+      var menssagemFaltandoDados = 'Necessário número da conta e valor.';
+      //_showMessage(context, menssagemFaltandoDados);
+    }
+  }
+
+  void _showMessage(BuildContext context, String menssagemSucesso) {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(menssagemSucesso),
     ));
   }
 }
 
+class Editor extends StatelessWidget {
+  final TextEditingController controlador;
+  final String rotulo;
+  final String dica;
+  final IconData icone;
+
+  Editor({this.controlador, this.rotulo, this.dica, this.icone});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+      child: TextField(
+        controller: controlador,
+        style: TextStyle(fontSize: 16.0),
+        decoration: InputDecoration(
+          icon: icone != null ? Icon(icone) : null,
+          labelText: rotulo,
+          hintText: dica,
+        ),
+        keyboardType: TextInputType.number,
+      ),
+    );
+  }
+}
+
 class ListaTranferencias extends StatelessWidget {
+  final List<Tranferencia> _transferencias = List();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          ItemTranferencia(Tranferencia(100.0, 1234)),
-          ItemTranferencia(Tranferencia(101.0, 1234)),
-          ItemTranferencia(Tranferencia(102.0, 1234))
-        ],
+      body: ListView.builder(
+        itemCount: _transferencias.length,
+        itemBuilder: (BuildContext context, int index) {
+          final tranferencia = _transferencias[index];
+          return ItemTranferencia(tranferencia);
+        },
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
+        onPressed: () {
+          final Future<Tranferencia> future =
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return FormularioTranferencia();
+          }));
+          future.then((tranferenciaRecebida) {
+            _transferencias.add(tranferenciaRecebida);
+          });
+        },
       ),
       appBar: AppBar(
         title: Text('Transferências'),
