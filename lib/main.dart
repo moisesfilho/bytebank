@@ -5,18 +5,29 @@ void main() => runApp(BytebankApp());
 class BytebankApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return MaterialApp(
-      home: Scaffold(
-        body: ListaTranferencias(),
+      home: ListaTranferencias(),
+      theme: ThemeData(
+        primaryColor: Colors.grey[700],
+        accentColor: Colors.indigoAccent[700],
+        buttonTheme: ButtonThemeData (
+          buttonColor: Colors.indigoAccent[700],
+          textTheme: ButtonTextTheme.primary
+        )
       ),
     );
   }
 }
 
-class FormularioTranferencia extends StatelessWidget {
+class FormularioTranferencia extends StatefulWidget {
+  @override
+  _FormularioTranferenciaState createState() => _FormularioTranferenciaState();
+}
+
+class _FormularioTranferenciaState extends State<FormularioTranferencia> {
   final TextEditingController _controladorCampoNumeroConta =
       TextEditingController();
+
   final TextEditingController _controladorCampoValor = TextEditingController();
 
   @override
@@ -25,22 +36,24 @@ class FormularioTranferencia extends StatelessWidget {
       appBar: AppBar(
         title: Text('Criando Tranferências'),
       ),
-      body: Column(
-        children: <Widget>[
-          Editor(
-              controlador: _controladorCampoNumeroConta,
-              rotulo: 'Número da Conta',
-              dica: '0000'),
-          Editor(
-              controlador: _controladorCampoValor,
-              rotulo: 'Valor',
-              dica: '0.00',
-              icone: Icons.monetization_on),
-          RaisedButton(
-            child: Text('Confirmar'),
-            onPressed: () => _criaTranferencia(context),
-          )
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Editor(
+                controlador: _controladorCampoNumeroConta,
+                rotulo: 'Número da Conta',
+                dica: '0000'),
+            Editor(
+                controlador: _controladorCampoValor,
+                rotulo: 'Valor',
+                dica: '0.00',
+                icone: Icons.monetization_on),
+            RaisedButton(
+              child: Text('Confirmar'),
+              onPressed: () => _criaTranferencia(context),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -95,14 +108,14 @@ class Editor extends StatelessWidget {
 
 class ListaTranferencias extends StatefulWidget {
   final List<Tranferencia> _transferencias = List();
-  
+
   @override
   State<StatefulWidget> createState() {
     return ListaTranferenciasState();
   }
 }
 
-class ListaTranferenciasState extends State<ListaTranferencias>{
+class ListaTranferenciasState extends State<ListaTranferencias> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,7 +134,11 @@ class ListaTranferenciasState extends State<ListaTranferencias>{
             return FormularioTranferencia();
           }));
           future.then((tranferenciaRecebida) {
-            widget._transferencias.add(tranferenciaRecebida);
+            if (tranferenciaRecebida != null) {
+              setState(() {
+                widget._transferencias.add(tranferenciaRecebida);
+              });
+            }
           });
         },
       ),
@@ -130,7 +147,6 @@ class ListaTranferenciasState extends State<ListaTranferencias>{
       ),
     );
   }
-
 }
 
 class ItemTranferencia extends StatelessWidget {
