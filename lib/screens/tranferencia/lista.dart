@@ -2,7 +2,7 @@ import 'package:bytebank/models/tranferencia.dart';
 import 'package:bytebank/screens/tranferencia/formulario.dart';
 import 'package:flutter/material.dart';
 
-const _tituloAppBar = 'Trannferências';
+const _tituloAppBar = 'Tranferências';
 const _textoTranferenciaComSucesso = 'Transferência criada com sucesso.';
 
 class ListaTranferencias extends StatefulWidget {
