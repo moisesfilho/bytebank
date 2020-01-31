@@ -8,6 +8,7 @@ const _dicaCampoValor = '0.0';
 const _rotuloCampoNumeroConta = 'Número da Conta';
 const _dicaCampoNumeroConta = '0000';
 const _textBotaoConfirmar = 'Confirmar';
+const _textoFalha = 'Verifique se os campos estão preenchidos corretamente.';
 
 class FormularioTranferencia extends StatefulWidget {
   @override
@@ -38,10 +39,12 @@ class _FormularioTranferenciaState extends State<FormularioTranferencia> {
                 rotulo: _rotuloCampoValor,
                 dica: _dicaCampoValor,
                 icone: Icons.monetization_on),
-            RaisedButton(
-              child: Text(_textBotaoConfirmar),
-              onPressed: () => _criaTranferencia(context),
-            ),
+            Builder(builder: (context) {
+              return RaisedButton(
+                child: Text(_textBotaoConfirmar),
+                onPressed: () => _criaTranferencia(context),
+              );
+            }),
           ],
         ),
       ),
@@ -54,6 +57,14 @@ class _FormularioTranferenciaState extends State<FormularioTranferencia> {
     if (numeroConta != null && valor != null) {
       final tranferenciaCriada = Tranferencia(valor, numeroConta);
       Navigator.pop(context, tranferenciaCriada);
+    } else {
+      showMessage(context, _textoFalha);
     }
+  }
+
+  void showMessage(BuildContext context, String menssagemSucesso) {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(content: Text(menssagemSucesso)),
+    );
   }
 }

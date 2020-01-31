@@ -3,6 +3,7 @@ import 'package:bytebank/screens/tranferencia/formulario.dart';
 import 'package:flutter/material.dart';
 
 const _tituloAppBar = 'Trannferências';
+const _textoTranferenciaComSucesso = 'Transferência criada com sucesso.';
 
 class ListaTranferencias extends StatefulWidget {
   final List<Tranferencia> _transferencias = List();
@@ -24,15 +25,19 @@ class ListaTranferenciasState extends State<ListaTranferencias> {
           return ItemTranferencia(tranferencia);
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return FormularioTranferencia();
-          })).then(
-            (tranferenciaRecebida) => atualiza(tranferenciaRecebida, context),
+      floatingActionButton: Builder(
+        builder: (context) {
+          return FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return FormularioTranferencia();
+              })).then(
+                (tranferenciaRecebida) => atualiza(tranferenciaRecebida, context),
+              );
+            },
           );
-        },
+        }
       ),
       appBar: AppBar(
         title: Text(_tituloAppBar),
@@ -44,7 +49,7 @@ class ListaTranferenciasState extends State<ListaTranferencias> {
     if (tranferenciaRecebida != null) {
       setState(() {
         widget._transferencias.add(tranferenciaRecebida);
-        showMessage(context, 'Inserido');
+        showMessage(context, _textoTranferenciaComSucesso);
       });
     }
   }
